@@ -39,10 +39,11 @@ public class ClientDataChannel {
             BufferedOutputStream output = new BufferedOutputStream(dataSocket.getOutputStream()))
         {
             Long startTime = System.currentTimeMillis();
-            long uploaded = inStream.transferTo(output);
+            long bUploaded = inStream.transferTo(output);
+            LOGGER.info(String.format("Uploaded %d bytes to server %d ", bUploaded, dataSocket.getPort()));
             Long endTime = System.currentTimeMillis();
             double timetook = (double) (endTime - startTime) / 1000;
-            double kBTransferred = uploaded / timetook;
+            double kBTransferred = bUploaded / timetook;
             FileTransferStats.displaySingleFileStats(file.getName(), kBTransferred / 1024, timetook);
         }
     }

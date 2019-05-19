@@ -22,7 +22,6 @@ public class FTPClient {
     private final String password;
     private final int port;
     private volatile ClientCommandChannel cmdChannel;
-    private volatile ClientDataChannel dataChannel;
     private static final Logger LOGGER = Logger.getLogger("CLIENT");
 
     public FTPClient(String host, String username, String password, int port) {
@@ -58,7 +57,7 @@ public class FTPClient {
     }
 
     /**
-     * Starting new threads for each data channel.
+     * Starting new threads and opening data channels.
      *
      * @param numOfFiles is number of files to transfer
      * @param files list of files to upload
@@ -82,34 +81,36 @@ public class FTPClient {
     }
 
     /**
-     * Opening passive data connection with the server.
+     * Creating new data channel and opening passive data connection with the server.
      * Sending STOR command and calling putFile.
      *
      * @param file to transfer
      * @throws IOException
-     * @see #openPassiveDataConnection(String)
+     * @see #requestPassiveConnection(String)
      */
-    private synchronized void putFile(File file) throws IOException {
-        openPassiveDataConnection(file.getName());
+    private void putFile(File file) throws IOException {
+        ClientDataChannel channel = new ClientDataChannel();
+        InetSocketAddress ip = requestPassiveConnection(file.getName());
+        LOGGER.info(String.format("CLIENT: Establishing data connection with server on IP address: %s:%s", ip.getHostName(), ip.getPort()));
+        channel.connect(ip);
         cmdChannel.sendCmd(FTPCmd.STOR, file.getName());
-        dataChannel.putFile(file);
+        channel.putFile(file);
+        channel.close();
     }
 
     /**
-     * Sending PASV command. Connecting to IP and port from server's response
+     * Send PASV command and request passive data connection with the server
      *
      * @param fileName
+     * @return {@link InetSocketAddress} extracted server IP and port number - {@link #getSocketIPAndPort(String)}
      * @throws IOException
      */
-    private synchronized void openPassiveDataConnection(String fileName) throws IOException {
+    private InetSocketAddress requestPassiveConnection(String fileName) throws IOException {
         LOGGER.info("CLIENT: Sending  " + FTPCmd.PASV.toString() + " command");
         cmdChannel.sendCmd(FTPCmd.PASV, fileName);
         String response = cmdChannel.getResponse();
         LOGGER.info("CLIENT: Server response is: " + response);
-        InetSocketAddress serverIP = getSocketIPAndPort(response);
-        dataChannel = new ClientDataChannel();
-        LOGGER.info(String.format("CLIENT: Establishing data connection with server on IP address: %s:%s", serverIP.getHostName(), serverIP.getPort()));
-        dataChannel.connect(serverIP);
+        return getSocketIPAndPort(response);
     }
 
     /**
@@ -149,13 +150,13 @@ public class FTPClient {
     }
 
     /**
-     * Stopping command and data channels
+     * Stopping command channel.
+     * Each data channel on separate thread is stopped after transaction finish {@link #putFile(File)}
      */
     public void stop() {
         try {
             cmdChannel.sendCmd(FTPCmd.QUIT, "");
             cmdChannel.close();
-            dataChannel.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

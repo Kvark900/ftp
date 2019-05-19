@@ -1,9 +1,10 @@
 package com.kvark900;
 
 import com.kvark900.client.FTPClient;
-import com.kvark900.util.FileTransferStats;
-import com.kvark900.util.ArgumentsParser;
 import com.kvark900.server.FTPServer;
+import com.kvark900.util.ArgumentsParser;
+import com.kvark900.util.FileTransferStats;
+
 import javax.naming.AuthenticationException;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -26,6 +27,7 @@ public class FTP {
     private static Thread server() {
         FTPServer server = new FTPServer();
         return new Thread(() -> {
+            double start = System.currentTimeMillis();
             server.start(21);
             while (!uploadFinished) {
                 try {
@@ -35,6 +37,8 @@ public class FTP {
                 }
             }
             server.stop();
+            double end = System.currentTimeMillis();
+            LOGGER.info(String.format("SERVER STOPPED IN: %f seconds", (end - start)/1000 ));
         });
     }
 

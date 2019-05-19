@@ -1,6 +1,5 @@
 package com.kvark900.util;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -30,8 +29,7 @@ public class FileTransferStats {
      */
     public static void displaySingleFileStats(String name, double v, double timetook){
         addStatistics(name, v, timetook);
-        DecimalFormat df = new DecimalFormat("0.00");
-        String singleFile = name + " transferred at " + df.format(v) + " KB/s, in " + df.format(timetook) + " seconds. ";
+        String singleFile = name + " transferred at " + v + " KB/s, in " + timetook + " seconds. ";
         System.out.println("=====================================================================================");
         LOGGER.info(singleFile);
         System.out.println("=====================================================================================");
@@ -45,7 +43,6 @@ public class FileTransferStats {
     public static void displaySummaryStats() {
         double totalSpeed = 0;
         double totalTime = 0;
-        DecimalFormat df = new DecimalFormat("0.00");
 
         for (int i = 0; i < NAMES.size(); i++) {
             double speed = SPEED.get(i);
@@ -57,7 +54,7 @@ public class FileTransferStats {
             }
         }
         System.out.println("=====================================================================================");
-        LOGGER.info("Average speed of all files: " + df.format(totalSpeed / NAMES.size()) + " KB/s. All finished in : " + df.format(totalTime));
+        LOGGER.info(String.format("Average speed for all files: %f KB/s. All finished in: %f ", totalSpeed / NAMES.size(), totalTime));
         System.out.println("=====================================================================================");
 
     }

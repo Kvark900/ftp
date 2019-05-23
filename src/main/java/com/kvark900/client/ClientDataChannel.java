@@ -18,7 +18,7 @@ public class ClientDataChannel {
     /**
      * Connecting to the server
      *
-     * @param serverIP server's IP and port number provided in response message on PASV cmd
+     * @param serverIP server's IP and port number provided in response message to PASV  cmd
      * @throws IOException
      */
     public void connect(InetSocketAddress serverIP) throws IOException {

@@ -153,12 +153,8 @@ public class FTPClient {
      * Stopping command channel.
      * Each data channel on separate thread is stopped after transaction finish {@link #putFile(File)}
      */
-    public void stop() {
-        try {
-            cmdChannel.sendCmd(FTPCmd.QUIT, "");
-            cmdChannel.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void stop() throws IOException {
+        cmdChannel.sendCmd(FTPCmd.QUIT, "");
+        cmdChannel.close();
     }
 }

@@ -10,7 +10,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.StringTokenizer;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -30,25 +29,20 @@ public class FTPServer {
      *
      * @param port integer representing server's port number
      */
-    public void start(int port) {
-        try {
-            LOGGER.info("SERVER: Starting server...");
-            serverSocket = new ServerSocket(port);
+    public void start(int port) throws IOException {
+        LOGGER.info("SERVER: Starting server...");
+        serverSocket = new ServerSocket(port);
 
-            LOGGER.info("SERVER: Waiting for clients...");
-            clientCmdSocket = serverSocket.accept();
-            LOGGER.info(String.format("SERVER: Accepted client %s", clientCmdSocket.getInetAddress().toString()));
+        LOGGER.info("SERVER: Waiting for clients...");
+        clientCmdSocket = serverSocket.accept();
+        LOGGER.info(String.format("SERVER: Accepted client %s", clientCmdSocket.getInetAddress().toString()));
 
-            writer = new PrintWriter(clientCmdSocket.getOutputStream(), true);
-            reader = new BufferedReader(new InputStreamReader(clientCmdSocket.getInputStream()));
-            String cmd;
-            while ((cmd = reader.readLine()) != null) {
-                LOGGER.info("SERVER: Command  Received: " + cmd);
-                processCmd(cmd);
-            }
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Exception occurred when starting the server", e);
-            System.exit(-1);
+        writer = new PrintWriter(clientCmdSocket.getOutputStream(), true);
+        reader = new BufferedReader(new InputStreamReader(clientCmdSocket.getInputStream()));
+        String cmd;
+        while ((cmd = reader.readLine()) != null) {
+            LOGGER.info("SERVER: Command  Received: " + cmd);
+            processCmd(cmd);
         }
     }
 
@@ -124,9 +118,7 @@ public class FTPServer {
      * @param message
      */
     private void sendLine(String message) {
-        if (clientCmdSocket == null) {
-            LOGGER.warning("Please connect!");
-        }
+        if (clientCmdSocket == null) LOGGER.warning("Please connect!");
         writer.write(message + "\r\n");
         writer.flush();
     }
@@ -134,16 +126,11 @@ public class FTPServer {
     /**
      * Closing sockets and streams
      */
-    public void stop() {
-        try {
-            reader.close();
-            writer.close();
-            clientCmdSocket.close();
-            serverSocket.close();
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Exception occurred when stopping the server", e);
-            System.exit(-1);
-        }
+    public void stop() throws IOException {
+        reader.close();
+        writer.close();
+        clientCmdSocket.close();
+        serverSocket.close();
     }
 
 

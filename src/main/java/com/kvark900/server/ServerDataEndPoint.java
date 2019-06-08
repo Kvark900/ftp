@@ -5,6 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -15,8 +16,8 @@ public class ServerDataEndPoint implements Runnable {
     private final String filename;
     private Socket clientSocket;
     private int port;
-    private static final Logger LOGGER = Logger.getLogger("SERVER");
     private ServerSocket serverSocket;
+    private static final Logger LOGGER = Logger.getLogger("SERVER");
 
     public ServerDataEndPoint(int port, String filename) {
         this.port = port;
@@ -41,7 +42,8 @@ public class ServerDataEndPoint implements Runnable {
             File file = new File(filename);
             Files.copy(initialStream, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, String.format("Exception occurred: %s", e.getMessage()), e);
+            System.exit(-1);
         }
     }
 }

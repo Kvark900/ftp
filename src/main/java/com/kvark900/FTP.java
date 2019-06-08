@@ -28,15 +28,14 @@ public class FTP {
         FTPServer server = new FTPServer();
         return new Thread(() -> {
             double start = System.currentTimeMillis();
-            server.start(21);
-            while (!uploadFinished) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            try {
+                server.start(21);
+                while (!uploadFinished) Thread.sleep(1000);
+                server.stop();
+            } catch (IOException  | InterruptedException e) {
+                LOGGER.log(Level.SEVERE, String.format("Exception occurred: %s", e.getMessage()), e);
+                System.exit(-1);
             }
-            server.stop();
             double end = System.currentTimeMillis();
             LOGGER.info(String.format("SERVER STOPPED IN: %f seconds", (end - start)/1000 ));
         });
@@ -53,7 +52,7 @@ public class FTP {
                 uploadFinished = true;
                 FileTransferStats.displaySummaryStats();
             } catch (IOException | AuthenticationException e) {
-                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                LOGGER.log(Level.SEVERE, String.format("Exception occurred: %s", e.getMessage()), e);
                 uploadFinished = true;
                 System.exit(-1);
             }

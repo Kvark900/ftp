@@ -38,13 +38,13 @@ public class ClientDataChannel {
         try (InputStream inStream = new FileInputStream(file);
             BufferedOutputStream output = new BufferedOutputStream(dataSocket.getOutputStream()))
         {
-            Long startTime = System.currentTimeMillis();
-            long bUploaded = inStream.transferTo(output);
-            LOGGER.info(String.format("Uploaded %d bytes to server %d ", bUploaded, dataSocket.getPort()));
-            Long endTime = System.currentTimeMillis();
-            double timetook = (double) (endTime - startTime) / 1000;
-            double kBTransferred = bUploaded / timetook;
-            FileTransferStats.displaySingleFileStats(file.getName(), kBTransferred / 1024, timetook);
+            long startTime = System.currentTimeMillis();
+            long bytesTransferred = inStream.transferTo(output);
+            LOGGER.info(String.format("Uploaded %d bytes to server %d ", bytesTransferred, dataSocket.getPort()));
+            long endTime = System.currentTimeMillis();
+            double timeTook = (double) (endTime - startTime) / 1000;
+            double kBTransferred = bytesTransferred / timeTook;
+            FileTransferStats.displaySingleFileStats(file.getName(), kBTransferred / 1024, timeTook);
         }
     }
 

@@ -64,10 +64,8 @@ public class FTPClient {
      */
     private void openDataChannels(int numOfFiles, List<File> files) {
         ExecutorService executor = Executors.newFixedThreadPool(numOfFiles);
-        Thread[] threads = new Thread[numOfFiles];
-        int i = 0;
-        for (final File file : files) {
-            threads[i] = new Thread(() -> {
+        for (File file : files) {
+            executor.submit(() -> {
                 try {
                     putFile(file);
                 } catch (IOException e) {
@@ -75,7 +73,6 @@ public class FTPClient {
                     System.exit(-1);
                 }
             });
-            executor.submit(threads[i++]);
         }
         shutdownAndAwaitTermination(executor);
     }

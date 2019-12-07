@@ -1,5 +1,8 @@
 package com.kvark900.server;
 
+import java.util.Arrays;
+import java.util.Optional;
+
 /**
  * Server's response codes
  */
@@ -19,19 +22,12 @@ public enum FTPReturnCode {
         this.code = code;
     }
 
-	public static FTPReturnCode fromId(int code)
-	{
-		for (FTPReturnCode ftpCode : FTPReturnCode.values())
-		{
-			if (ftpCode.getCode() == code)
-			{
-				return ftpCode;
-			}
-		}
-		return FTPReturnCode.UNKNOWN_ERROR;
-	}
+    public static FTPReturnCode fromId(int code) {
+        Optional<FTPReturnCode> r = Arrays.stream(FTPReturnCode.values()).filter(c -> c.code == code).findFirst();
+        return r.orElse(FTPReturnCode.UNKNOWN_ERROR);
+    }
 
-	public int getCode() {
+    public int getCode() {
         return code;
     }
 }

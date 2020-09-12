@@ -17,6 +17,7 @@ public class ServerDataEndPoint implements Runnable {
     private Socket clientSocket;
     private int port;
     private ServerSocket serverSocket;
+    private static final String SERVER_REPO_PATH = "./src/main/resources/server/";
     private static final Logger LOGGER = Logger.getLogger("SERVER");
 
     public ServerDataEndPoint(int port, String filename) {
@@ -39,7 +40,7 @@ public class ServerDataEndPoint implements Runnable {
             LOGGER.info(String.format("SERVER: Accepted client %s", clientSocket.getInetAddress().toString()));
 
             InputStream initialStream = clientSocket.getInputStream();
-            File file = new File(filename);
+            File file = new File( SERVER_REPO_PATH + filename);
             Files.copy(initialStream, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, String.format("Exception occurred: %s", e.getMessage()), e);

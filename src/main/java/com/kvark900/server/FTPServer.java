@@ -108,8 +108,8 @@ public class FTPServer {
      */
     private String createResponse(FTPReturnCode code, String message) {
         return code != null ?
-                code.getCode() + " " + code.toString() + (message.isEmpty() ? "" : " " + message) :
-                FTPReturnCode.UNKNOWN_ERROR.toString();
+               code.getCode() + " " + code.toString() + (message.isEmpty() ? "" : " " + message) :
+               FTPReturnCode.UNKNOWN_ERROR.toString();
     }
 
     /**

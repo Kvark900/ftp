@@ -47,7 +47,9 @@ public class FTP {
             FTPClient client = new FTPClient(parser.getServer(), parser.getUsername(), parser.getPassword(), 21);
             try {
                 client.connect();
+                long start = System.currentTimeMillis();
                 client.uploadFiles(parser.getFileNames());
+                LOGGER.log(Level.INFO, "Total upload time: " + (System.currentTimeMillis() - start));
                 client.stop();
                 uploadFinished = true;
                 FileTransferStats.displaySummaryStats();
